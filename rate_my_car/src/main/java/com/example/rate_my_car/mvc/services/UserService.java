@@ -30,6 +30,7 @@ public class UserService {
         }
         return newUser;
     }
+
     public User login(LoginUser newLoginObject, BindingResult result) {
         User user = null;
         Optional<User> potentialUser = userRepository.findByEmail(newLoginObject.getEmail());

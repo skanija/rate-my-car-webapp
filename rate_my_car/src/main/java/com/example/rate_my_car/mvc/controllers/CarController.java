@@ -1,7 +1,6 @@
 package com.example.rate_my_car.mvc.controllers;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -41,15 +40,9 @@ public class CarController {
         if(session.getAttribute("loggedInUser") != null){
             User user = userService.findUser((long) session.getAttribute("loggedInUser"));
             List<Car> all = carService.allCars();
-                if (engineType != null && !engineType.isEmpty()) {
-                    all = all.stream()
-                            .filter(t -> t.getEngineType().equals(engineType))
-                            .collect(Collectors.toList());
-                }
             model.addAttribute("loggedInUser", user);
             model.addAttribute("allUsers", userService.allUsers());
             model.addAttribute("allCars", all);
-            model.addAttribute("engineType", engineType);
             session.removeAttribute("currentCar");
             return "carIndex";
         }
@@ -67,13 +60,21 @@ public class CarController {
     }
 
     @PostMapping("/cars/add")
-    public String createCar(@Valid @ModelAttribute("car") Car car, BindingResult result, @RequestParam("image") MultipartFile image,  HttpSession session) {
+    public String createCar(@Valid @ModelAttribute("car") Car car, BindingResult result, @RequestParam("image") MultipartFile image, Model model, HttpSession session) {
+        if (result.hasErrors()) {
+            System.out.println(result.getAllErrors());
+            model.addAttribute("loggedInUser", userService.findUser((Long) session.getAttribute("loggedInUser")));
+            model.addAttribute("submitted", true);
+            return "addCar";
+        }
         User user = userService.findUser((long) session.getAttribute("loggedInUser"));
-        Car newCar = new Car(car.getName(), car.getWheelArrangement(), car.getEngineType(), car.getBuildDate(), car.getLocation(), car.getDateSpotted(), user);
-        newCar.setImagePath(image.getOriginalFilename());
-        newCar.setImageContentType(image.getContentType());
-        newCar.setImageSize(image.getSize());
-        carService.createCar(newCar);
+        car.setUser(user);
+
+        car.setImagePath(image.getOriginalFilename());
+        car.setImageContentType(image.getContentType());
+        car.setImageSize(image.getSize());
+
+        carService.createCar(car);
         storageService.store(image);
         return "redirect:/cars";
     }
@@ -103,10 +104,13 @@ public class CarController {
     }
 
     @RequestMapping("/cars/edit")
-    public String update(@Valid @ModelAttribute("car") Car car, BindingResult result, @RequestParam("image") MultipartFile image, Model model) {
+    public String update(@Valid @ModelAttribute("car") Car car, BindingResult result, @RequestParam("image") MultipartFile image, Model model, HttpSession session) {
         if (result.hasErrors()) {
             model.addAttribute("car", car);
+            model.addAttribute("submitted", true);
             return "editCar";
+        } else if (session.getAttribute("loggedInUser") == null) {
+            return "redirect:/logout";
         } else {
             Car newCar = car;
             newCar.setUser(carService.findCar(car.getId()).getUser());
@@ -121,8 +125,14 @@ public class CarController {
 
     @RequestMapping(value="/cars/delete/{id}")
     public String destroy(@PathVariable("id") Long id, HttpSession session) {
-        User loggedInUser = userService.findUser((long) session.getAttribute("loggedInUser"));
-        if(carService.findCar(id).getUser().getId() == loggedInUser.getId()){
+        if (session.getAttribute("loggedInUser") == null) {
+            return "redirect:/logout";
+        }   
+
+        User loggedInUser = userService.findUser((Long) session.getAttribute("loggedInUser"));
+        Car car = carService.findCar(id);
+
+        if(car != null && car.getUser().getId().equals(loggedInUser.getId())) {
             carService.deleteCar(id);
         }
         return "redirect:/cars";

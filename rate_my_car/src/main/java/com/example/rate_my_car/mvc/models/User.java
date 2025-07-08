@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -13,6 +14,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
@@ -46,14 +49,16 @@ public class User {
     @DateTimeFormat(pattern="yyyy-MM-dd")
     private Date updatedAt;
 
-    @OneToMany(mappedBy="user", fetch = FetchType.LAZY)
-    private List<Car> trains;
+    @OneToMany(mappedBy="user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Car> cars = new ArrayList<>();
+
+    @OneToMany(mappedBy="user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Review> reviews = new ArrayList<>();
 
     public User(String userName, String email, String password) {
         this.userName = userName;
         this.email = email;
         this.password = password;
-        this.trains = new ArrayList<Car>();
         this.createdAt = new Date();
         this.updatedAt = new Date();
     }
@@ -93,12 +98,20 @@ public class User {
         this.password = password;
     }
 
-    public List<Car> getTrains() {
-        return trains;
+    public List<Car> getCars() {
+        return cars;
     }
 
-    public void setTrains(List<Car> trains) {
-        this.trains = trains;
+    public void setCars(List<Car> cars) {
+        this.cars = cars;
+    }
+
+    public List<Review> getReviews() {
+        return reviews;
+    }
+
+    public void setReviews(List<Review> reviews) {
+        this.reviews = reviews;
     }
 
     public Date getCreatedAt() {
@@ -117,5 +130,15 @@ public class User {
         this.updatedAt = updatedAt;
     }
 
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = new Date();
+        this.updatedAt = new Date();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = new Date();
+    }
 }
 
