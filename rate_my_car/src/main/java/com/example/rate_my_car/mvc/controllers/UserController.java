@@ -39,7 +39,7 @@ public class UserController {
         User u = new User();
         u.setUserName(newUser.getUserName());
         u.setEmail(newUser.getEmail());
-        u.setPassword(BCrypt.hashpw(newUser.getPassword(), BCrypt.gensalt()));
+        u.setPassword(newUser.getPassword());
 
         User registeredUser = userService.register(u, result);
 
