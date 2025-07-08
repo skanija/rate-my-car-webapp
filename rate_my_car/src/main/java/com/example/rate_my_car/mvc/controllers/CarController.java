@@ -64,6 +64,7 @@ public class CarController {
         if (result.hasErrors()) {
             System.out.println(result.getAllErrors());
             model.addAttribute("loggedInUser", userService.findUser((Long) session.getAttribute("loggedInUser")));
+            model.addAttribute("submitted", true);
             return "addCar";
         }
         User user = userService.findUser((long) session.getAttribute("loggedInUser"));
@@ -104,15 +105,12 @@ public class CarController {
 
     @RequestMapping("/cars/edit")
     public String update(@Valid @ModelAttribute("car") Car car, BindingResult result, @RequestParam("image") MultipartFile image, Model model, HttpSession session) {
-        Long userId = (Long) session.getAttribute("loggedInUser");
-
-        if (userId == null || !car.getUser().getId().equals(userId)) {
-            return "redirect:/logout";
-        }
-        
         if (result.hasErrors()) {
             model.addAttribute("car", car);
+            model.addAttribute("submitted", true);
             return "editCar";
+        } else if (session.getAttribute("loggedInUser") == null) {
+            return "redirect:/logout";
         } else {
             Car newCar = car;
             newCar.setUser(carService.findCar(car.getId()).getUser());
@@ -127,13 +125,11 @@ public class CarController {
 
     @RequestMapping(value="/cars/delete/{id}")
     public String destroy(@PathVariable("id") Long id, HttpSession session) {
-        Long userId = (Long) session.getAttribute("loggedInUser");
-
-        if (userId == null) {
+        if (session.getAttribute("loggedInUser") == null) {
             return "redirect:/logout";
         }   
 
-        User loggedInUser = userService.findUser(userId);
+        User loggedInUser = userService.findUser((Long) session.getAttribute("loggedInUser"));
         Car car = carService.findCar(id);
 
         if(car != null && car.getUser().getId().equals(loggedInUser.getId())) {
