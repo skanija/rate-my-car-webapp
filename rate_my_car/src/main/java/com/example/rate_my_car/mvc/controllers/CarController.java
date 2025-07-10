@@ -95,7 +95,7 @@ public class CarController {
             model.addAttribute("car", carService.findCar(carId));
             session.setAttribute("currentcar", carService.findCar(carId));
             String detailString = carService.findCar(carId).getCarDetails();
-            String[] details = detailString.split("\\s*,\\s*");
+            String[] details =  (detailString != null) ? detailString.split("\\s*,\\s*") : new String[0];
             model.addAttribute("carDetails", details);
             return "oneCar";
         }
