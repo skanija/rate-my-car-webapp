@@ -5,36 +5,59 @@
         <title>Rate My Car</title>
         <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" />
     </head>
-    <body class="p-3">
+    <body>
 
-        <div class="row">
+        <div class="row bg-dark p-3 mb-3">
             <div class="col">
-                <h1 class="text-primary" th:text="${car.releaseYear} + ' ' + ${car.carMake} + ' ' + ${car.carModel}">...</h1>
+                <h1 class="text-light" th:text="${car.releaseYear} + ' ' + ${car.carMake} + ' ' + ${car.carModel}">...</h1>
             </div>
             <div class="col">
-                <p><a th:href="@{/cars}">cars</a></p>
+                <p><a th:href="@{/cars}">All Cars</a></p>
             </div>
             <div class="col">
-                <p><a th:href="@{/logout}">logout</a></p>
+                <p><a th:href="@{/logout}">Logout</a></p>
             </div>
         </div>
 
-        <div class="row">
+        <div class="row p-3">
             <div class="col">
-                <!-- add specific information -->>
+                <h2>Extra Info:</h2>
+                <p th:if="${car.carDetails == ''}">User has not added any extra info</p>
+                <ul th:unless="${car.carDetails == ''}" th:each="detail : ${carDetails}">
+                    <li><p th:text="${detail}">detail</p></li>
+                </ul>
             </div>
             <div class="col">
                 <img th:src="@{/files/{img}(img=${car.imagePath})}" th:alt="${car.releaseYear} + ' ' + ${car.carMake} + ' ' + ${car.carModel}" class="img-fluid" />
             </div>
         </div>
 
-        <div th:if="${loggedInUser.id == car.user.id}" class="mt-3">
+        <div th:if="${loggedInUser.id == car.user.id}" class="p-3 mt-3">
             <form th:action="@{/cars/edit/{id}(id=${car.id})}" method="get">
                 <button type="submit" class="btn btn-warning">Edit Post</button>
             </form>
             <form th:action="@{/cars/delete/{id}(id=${car.id})}" method="get">
                 <button type="submit" class="btn btn-danger">Delete Post</button>
             </form>
+        </div>
+
+        <div th:if="${loggedInUser.id != car.user.id}" class="p-3 mt-3">
+            <h2>Reviews:</h2>
+            <div th:if="${#lists.isEmpty(car.reviews)}">
+                <p>No reviews just yet!</p>
+            </div>
+            <div>
+                <a th:href="@{/reviews/new(carId=${car.id})}">
+                    <button class="btn btn-secondary">Leave a Review!</button>
+                </a>
+            </div>
+            <div th:each="review : ${car.reviews}">
+                <div>
+                    <P>Rating: <span th:text="${review.rating}">5</span>/5</P>
+                    <p th:text="${review.comment}">This car is cool!</p>
+                    <P>Reviewed by: <span th:text="${review.user.userName}">User</span></P>
+                </div>
+            </div>
         </div>
 
 

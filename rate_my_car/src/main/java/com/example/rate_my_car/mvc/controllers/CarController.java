@@ -51,9 +51,16 @@ public class CarController {
 
     @GetMapping("/cars/new")
     public String newCar(@Valid @ModelAttribute("car") Car car, BindingResult result, Model model, HttpSession session) {
+        Long loggedInUserId = (Long) session.getAttribute("loggedInUser");
+        
+        if (loggedInUserId == null) { 
+            return "redirect:/logout";
+        }
+        
         if(session.getAttribute("loggedInUser") != null){
             User user = userService.findUser((long) session.getAttribute("loggedInUser"));
             model.addAttribute("loggedInUser", user);
+            car.setReleaseYear(2025);
             return "addCar";
         }
         return "redirect:/logout";
@@ -87,6 +94,9 @@ public class CarController {
             model.addAttribute("poster", carService.findCar(carId).getUser());
             model.addAttribute("car", carService.findCar(carId));
             session.setAttribute("currentcar", carService.findCar(carId));
+            String detailString = carService.findCar(carId).getCarDetails();
+            String[] details = detailString.split("\\s*,\\s*");
+            model.addAttribute("carDetails", details);
             return "oneCar";
         }
         return "redirect:/logout";
@@ -104,24 +114,34 @@ public class CarController {
     }
 
     @RequestMapping("/cars/edit")
-    public String update(@Valid @ModelAttribute("car") Car car, BindingResult result, @RequestParam("image") MultipartFile image, Model model, HttpSession session) {
+    public String update(@Valid @ModelAttribute("car") Car car,BindingResult result,@RequestParam("image") MultipartFile image,Model model,HttpSession session) {
         if (result.hasErrors()) {
             model.addAttribute("car", car);
             model.addAttribute("submitted", true);
             return "editCar";
-        } else if (session.getAttribute("loggedInUser") == null) {
-            return "redirect:/logout";
-        } else {
-            Car newCar = car;
-            newCar.setUser(carService.findCar(car.getId()).getUser());
-            newCar.setImagePath(image.getOriginalFilename());
-            newCar.setImageContentType(image.getContentType());
-            newCar.setImageSize(image.getSize());
-            carService.updateCar(newCar);
-            storageService.store(image);
-            return "redirect:/cars";
         }
-    }
+
+        if (session.getAttribute("loggedInUser") == null) {
+            return "redirect:/logout";
+        }
+
+        Car existingCar = carService.findCar(car.getId());
+        car.setUser(existingCar.getUser());
+
+        if (image != null && !image.isEmpty()) {
+            car.setImagePath(image.getOriginalFilename());
+            car.setImageContentType(image.getContentType());
+            car.setImageSize(image.getSize());
+            storageService.store(image);
+        } else {
+            car.setImagePath(existingCar.getImagePath());
+            car.setImageContentType(existingCar.getImageContentType());
+            car.setImageSize(existingCar.getImageSize());
+        }
+
+        carService.updateCar(car);
+        return "redirect:/cars/" + existingCar.getId();
+}
 
     @RequestMapping(value="/cars/delete/{id}")
     public String destroy(@PathVariable("id") Long id, HttpSession session) {

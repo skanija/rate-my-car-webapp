@@ -8,7 +8,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.example.rate_my_car.mvc.models.FormUser;
@@ -32,7 +31,7 @@ public class UserController {
         return "login";
     }
 
-    @PostMapping("/register")
+    @RequestMapping("/register")
     public String register(@Valid @ModelAttribute("newUser") FormUser newUser, BindingResult result, Model model, HttpSession session) {
 
         newUser.isPasswordsMatching();
@@ -44,7 +43,9 @@ public class UserController {
         User registeredUser = userService.register(u, result);
 
         if(result.hasErrors()) {
+            model.addAttribute("submitted", true);
             model.addAttribute("newLogin", new LoginUser());
+            model.addAttribute("submitted", true);
             return "login";
         }
         userService.createUser(u);
@@ -52,20 +53,27 @@ public class UserController {
 
         return "redirect:/cars";
     }
-    
-    @PostMapping("/login")
+
+    @RequestMapping("/login")
     public String login(@Valid @ModelAttribute("newLogin") LoginUser newLogin, BindingResult result, Model model, HttpSession session) {
 
         if(result.hasErrors()) {
+            model.addAttribute("newLogin", newLogin);
             model.addAttribute("newUser", new FormUser());
+            model.addAttribute("submitted", true);
             return "login";
         }
 
-        System.out.println(newLogin);
-
         User user = userService.login(newLogin, result);
-        session.setAttribute("loggedInUser", user.getId());
 
+        if (user == null) {
+            model.addAttribute("newLogin", newLogin);
+            model.addAttribute("newUser", new FormUser());
+            model.addAttribute("submitted", true);
+            return "login";
+        }
+
+        session.setAttribute("loggedInUser", user.getId());
         return "redirect:/cars";
     }
 
@@ -78,6 +86,13 @@ public class UserController {
     @GetMapping("/user/{user_id}")
     public String editUser(@PathVariable("user_id") long userId, Model model, HttpSession session) {
         User loggedInUser = userService.findUser((long) session.getAttribute("loggedInUser"));
+
+        Long loggedInUserId = (Long) session.getAttribute("loggedInUser");
+        
+        if (loggedInUserId == null) { 
+            return "redirect:/logout";
+        }
+        
         if(session.getAttribute("loggedInUser") != null && userService.findUser(userId).getId() == loggedInUser.getId()){
             FormUser editUser = new FormUser();
             editUser.setUserName(loggedInUser.getUserName());
@@ -92,6 +107,7 @@ public class UserController {
     @RequestMapping("/users/edit")
     public String update(@Valid @ModelAttribute("editUser") FormUser editUser, BindingResult result, Model model, HttpSession session) {
         if (result.hasErrors()) {
+            model.addAttribute("submitted", true);
             User loggedInUser = userService.findUser((long) session.getAttribute("loggedInUser"));
             model.addAttribute("loggedInUser", loggedInUser);
             model.addAttribute("editUser", editUser);

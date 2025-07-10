@@ -5,103 +5,107 @@
         <title>Rate My Car</title>
         <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" />
     </head>
-    <body class="p-3">
+    <body>
 
-        <h1 class="text-primary">Welcome!</h1>
+        <div class="row bg-dark p-3 mb-3">
+            <h1 class="text-light">Welcome!</h1>
+        </div>
 
-        <p>Register</p>
-        <form action="#" th:action="@{/register}" th:object="${newUser}" method="post">
-            <div class="form-group">
-                <label for="userName">Username:</label>
-                <input
-                    type="text"
-                    th:field="*{userName}"
-                    id="userName"
-                    class="form-control"
-                />
-                <div
-                    th:if="${#fields.hasErrors('userName')} and ${submitted}"
-                    th:errors="*{userName}"
-                    class="text-danger"
-                ></div>
-            </div>
-            <div class="form-group">
-                <label for="email">Email:</label>
-                <input
-                    type="email"
-                    th:field="*{email}"
-                    id="email"
-                    class="form-control"
-                />
-                <div
-                    th:if="${#fields.hasErrors('email')} and ${submitted}"
-                    th:errors="*{email}"
-                    class="text-danger"
-                ></div>
-            </div>
-            <div class="form-group">
-                <label for="password">Password:</label>
-                <input
-                    type="password"
-                    th:field="*{password}"
-                    id="password"
-                    class="form-control"
-                />
-                <div
-                    th:if="${#fields.hasErrors('password')} and ${submitted}"
-                    th:errors="*{password}"
-                    class="text-danger"
-                ></div>
-            </div>
-            <div class="form-group">
-                <label for="confirm">Confirm Password:</label>
-                <input
-                    type="password"
-                    th:field="*{confirm}"
-                    id="confirm"
-                    class="form-control"
-                />
-                <div
-                    th:if="${#fields.hasErrors('confirm')} and ${submitted}"
-                    th:errors="*{confirm}"
-                    class="text-danger"
-                ></div>
-            </div>
-            <input type="submit" value="Submit" class="btn btn-primary"/>
-        </form>
+        <div class="p-3">
+            <p>Register</p>
+            <form action="#" th:action="@{/register}" th:object="${newUser}" method="post">
+                <div class="form-group">
+                    <label for="userName">Username:</label>
+                    <input
+                        type="text"
+                        th:field="*{userName}"
+                        id="userName"
+                        class="form-control"
+                    />
+                    <div
+                        th:if="${#fields.hasErrors('userName')} and ${submitted}"
+                        th:errors="*{userName}"
+                        class="text-danger"
+                    ></div>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input
+                        type="email"
+                        th:field="*{email}"
+                        id="email"
+                        class="form-control"
+                    />
+                    <div
+                        th:if="${#fields.hasErrors('email')} and ${submitted}"
+                        th:errors="*{email}"
+                        class="text-danger"
+                    ></div>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input
+                        type="password"
+                        th:field="*{password}"
+                        id="password"
+                        class="form-control"
+                    />
+                    <div
+                        th:if="${#fields.hasErrors('password')} and ${submitted}"
+                        th:errors="*{password}"
+                        class="text-danger"
+                    ></div>
+                </div>
+                <div class="form-group">
+                    <label for="confirm">Confirm Password:</label>
+                    <input
+                        type="password"
+                        th:field="*{confirm}"
+                        id="confirm"
+                        class="form-control"
+                    />
+                    <div
+                        th:if="${#fields.hasErrors('confirm')} and ${submitted}"
+                        th:errors="*{confirm}"
+                        class="text-danger"
+                    ></div>
+                </div>
+                <input type="submit" value="Submit" class="btn btn-primary"/>
+            </form>
 
-        <p>Log In</p>
-        <form action="#" th:action="@{/login}" th:object="${newLogin}" method="post">
-            <div class="form-group">
-                <label for="email">Email:</label>
-                <input
-                    type="email"
-                    th:field="*{email}"
-                    id="email"
-                    class="form-control"
-                />
-                <div
-                    th:if="${#fields.hasErrors('email')} and ${submitted}"
-                    th:errors="*{email}"
-                    class="text-danger"
-                ></div>
-            </div>
-            <div class="form-group">
-                <label for="password">Password:</label>
-                <input
-                    type="password"
-                    th:field="*{password}"
-                    id="password"
-                    class="form-control"
-                />
-                <div
-                    th:if="${#fields.hasErrors('password')} and ${submitted}"
-                    th:errors="*{password}"
-                    class="text-danger"
-                ></div>
-            </div>
-            <input type="submit" value="Submit" class="btn btn-primary"/>
-        </form>
+            <p>Log In</p>
+            <form action="#" th:action="@{/login}" th:object="${newLogin}" method="post">
+                <div class="form-group">
+                    <label for="loginEmail">Email:</label>
+                    <input
+                        type="email"
+                        th:field="*{loginEmail}"
+                        id="loginEmail"
+                        class="form-control"
+                    />
+                    <div
+                        th:if="${#fields.hasErrors('loginEmail')} and ${submitted}"
+                        th:errors="*{loginEmail}"
+                        class="text-danger"
+                    ></div>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password:</label>
+                    <input
+                        type="password"
+                        th:field="*{loginPassword}"
+                        id="loginPassword"
+                        class="form-control"
+                    />
+                    <div
+                        th:if="${#fields.hasErrors('loginPassword')} and ${submitted}"
+                        th:errors="*{loginPassword}"
+                        class="text-danger"
+                    ></div>
+                </div>
+                <input type="submit" value="Submit" class="btn btn-primary"/>
+            </form>
+        </div>
     </body>
     <script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
 </html>

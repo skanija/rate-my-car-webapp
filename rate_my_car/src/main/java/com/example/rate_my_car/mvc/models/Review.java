@@ -17,7 +17,6 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name="reviews")
@@ -42,11 +41,9 @@ public class Review {
     @JoinColumn(name = "car_id")
     private Car car;
 
-    @NotNull
     @DateTimeFormat(pattern="yyyy-MM-dd")
     private Date createdAt;
 
-    @NotNull
     @DateTimeFormat(pattern="yyyy-MM-dd")
     private Date updatedAt;
 

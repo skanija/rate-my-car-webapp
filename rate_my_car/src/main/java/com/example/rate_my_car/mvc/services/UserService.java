@@ -36,15 +36,15 @@ public class UserService {
 
     public User login(LoginUser newLoginObject, BindingResult result) {
         User user = null;
-        Optional<User> potentialUser = userRepository.findByEmail(newLoginObject.getEmail());
-        if(!potentialUser.equals(null)){
-            user = userRepository.getByEmail(newLoginObject.getEmail());
-            if(!BCrypt.checkpw(newLoginObject.getPassword(), user.getPassword())) {
-                result.rejectValue("password", "Matches", "Invalid Password!");
+        Optional<User> potentialUser = userRepository.findByEmail(newLoginObject.getLoginEmail());
+        if(!potentialUser.isEmpty()){
+            user = potentialUser.get();
+            if(!BCrypt.checkpw(newLoginObject.getLoginPassword(), user.getPassword())) {
+                result.rejectValue("loginPassword", "Matches", "Invalid Password!");
             }
         }
         else{
-            result.rejectValue("email", "NonExistent", "This email is not registered!");
+            result.rejectValue("loginEmail", "NonExistent", "This email is not registered!");
         }
 
         if(result.hasErrors()){

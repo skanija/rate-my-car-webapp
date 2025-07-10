@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>Rate my Car - Leave a review!</title>
+        <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" />
+    </head>
+        <body>
+
+            <div class="row bg-dark p-3 mb-3">
+                <div class="col">
+                    <h1 class="text-light">Leave Your Review!</h1>
+                </div>
+                <div class="col">
+                    <a th:href="@{/cars/{id}(id=${car.id})}">Go Back To Car</a>
+                </div>
+                <div class="col">
+                    <p><a th:href="@{/cars}">All Cars!</a></p>
+                </div>
+                <div class="col">
+                    <p><a th:href="@{/logout}">Logout</a></p>
+                </div>
+            </div>
+            <h2 th:text="'Reviewing: ' + ${car.carMake} + ' ' + ${car.carModel} + ' by ' + ${car.user.userName}"></h2>
+            <form  th:action="@{/reviews/create(carId=${car.id})}" th:object="${review}" method="post">
+
+                <div class="form-group">
+                    <label for="rating">Rating (1-5)</label>
+                    <input class="form-control" type="number" th:field="*{rating}" min="1" max="5" id="rating"/>
+                    <div class="text-danger" th:if="${#fields.hasErrors('rating')} and ${submitted}" th:errors="*{rating}"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="comment">Comment:</label>
+                    <textarea class="form-control" th:field="*{comment}" id="comment"></textarea>
+                    <div class="text-danger" th:if="${#fields.hasErrors('comment')} and ${submitted}" th:errors="*{comment}"></div>
+                </div>
+
+                <input type="submit" value="Submit Review" class="btn btn-primary">
+                <a th:href="@{/cars/{id}(id=${car.id})}" class="btn btn-secondary">Back to Car!</a>
+            </form>
+        </body>
+    <script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+</html>
