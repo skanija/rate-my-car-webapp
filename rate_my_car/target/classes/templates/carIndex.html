@@ -5,20 +5,20 @@
         <title>Rate My Car</title>
         <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" />
     </head>
-    <body class="p-3">
+    <body>
 
-        <div class="row">
+        <div class="row bg-dark p-3 mb-3">
             <div class="col">
-                <h1 class="text-primary" th:text="'Welcome, ' + ${loggedInUser.getUserName()}">Welcome, User</h1>
+                <h1 class="text-light" th:text="'Welcome, ' + ${loggedInUser.getUserName()}">Welcome, User</h1>
             </div>
             <div class="col">
-                <p><a th:href="@{/cars/new}">post your ride</a></p>
+                <p><a th:href="@{/cars/new}">Post Your Ride</a></p>
             </div>
             <div class="col">
-                <p><a th:href="@{/user/{id}(id=${loggedInUser.getId()})}">user settings</a></p>
+                <p><a th:href="@{/user/{id}(id=${loggedInUser.getId()})}">User Settings</a></p>
             </div>
             <div class="col">
-                <p><a th:href="@{/logout}">logout</a></p>
+                <p><a th:href="@{/logout}">Logout</a></p>
             </div>
         </div>
 
@@ -37,10 +37,13 @@
                 <div class="col border border-black">
                     <p>Year</p>
                 </div>
+                <div class="col border border-black">
+                    <p>Posted By</p>
+                </div>
             </div>
 
             <div th:each="car : ${allCars}" class="row">
-                <div class="col">
+                <div class="col border border-black">
                     <img th:src="@{/files/{img}(img=${car.imagePath})}" th:alt="${car.releaseYear} + ' ' + ${car.carMake} + ' ' + ${car.carModel}" class="img-fluid" />
                 </div>
                 <div class="col border border-black">
@@ -51,6 +54,9 @@
                 </div>
                 <div class="col border border-black">
                     <p th:text="${car.releaseYear}">Year</p>
+                </div>
+                <div class="col border border-black">
+                    <p th:text="${car.user.userName}">User Name</p>
                 </div>
             </div>
 

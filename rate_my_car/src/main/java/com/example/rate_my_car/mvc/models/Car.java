@@ -23,6 +23,7 @@ import jakarta.persistence.Transient;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 @Entity
@@ -34,17 +35,20 @@ public class Car {
     private Long id;
 
     @NotNull
-    @Size(min=1, max=200, message="Make must not be blank")
+    @Size(min=1, max=200, message="Make must not be blank!")
     private String carMake;
 
     @NotNull
-    @Size(min=1, max=200, message="Model must not be blank")
+    @Size(min=1, max=200, message="Model must not be blank!")
     private String carModel;
 
     @NotNull
     @Min(1886)
     @Max(2025)
     private int releaseYear;
+
+    @Pattern(regexp="^$|^[^,]+(,[^,]+)*$", message="Separate details by comma")
+    private String carDetails;
 
     private String imagePath;
     private String imageContentType;
@@ -69,10 +73,11 @@ public class Car {
     public Car(){
     }
 
-    public Car(String name, int releaseYear, String carMake, String carModel, User user) {
+    public Car(String name, int releaseYear, String carMake, String carModel, String carDetails, User user) {
         this.releaseYear = releaseYear;
         this.carMake = carMake;
         this.carModel = carModel;
+        this.carDetails = carDetails;
         this.user = user;
     }
 
@@ -113,6 +118,14 @@ public class Car {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public String getCarDetails() {
+        return carDetails;
+    }
+
+    public void setCarDetails(String carDetails) {
+        this.carDetails = carDetails;
     }
 
 

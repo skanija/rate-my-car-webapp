@@ -45,9 +45,12 @@ public class ReviewController {
             return "redirect:/cars";
         }
 
-        model.addAttribute("review", new Review());
+        Review review = new Review();
+        review.setRating(1);
+
+        model.addAttribute("review", review);
         model.addAttribute("car", car);
-        return "newReview";
+        return "reviewForm";
     }
 
     @PostMapping("/reviews/create")
@@ -55,9 +58,12 @@ public class ReviewController {
         Long loggedInUserId = (Long) session.getAttribute("loggedInUser");
 
         if (result.hasErrors()) {
+            model.addAttribute("submitted", true);
             Car car = carService.findCar(carId);
             model.addAttribute("car", car);
-            return "newReview";
+            model.addAttribute("review", review);
+            System.out.println(result.getAllErrors());
+            return "reviewForm";
         }
 
         User user = userService.findUser(loggedInUserId);
@@ -71,7 +77,13 @@ public class ReviewController {
     }
 
     @GetMapping("/review/{id}")
-    public String showReview(@PathVariable("id") Long id, Model model) {
+    public String showReview(@PathVariable("id") Long id, Model model, HttpSession session) {
+        Long loggedInUserId = (Long) session.getAttribute("loggedInUser");
+        
+        if (loggedInUserId == null) { 
+            return "redirect:/logout";
+        }
+        
         Review review = reviewService.findReview(id);
         if (review == null) {
             return "redirect:/carsindex";

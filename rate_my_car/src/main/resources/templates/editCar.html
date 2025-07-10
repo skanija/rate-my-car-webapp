@@ -5,21 +5,24 @@
         <title>Rate My Car</title>
         <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" />
     </head>
-    <body class="p-3">
+    <body>
 
-        <div class="row">
+        <div class="row bg-dark p-3 mb-3">
             <div class="col">
-                <h1 class="text-primary">Edit Post</h1>
+                <h1 class="text-light">Edit Post</h1>
             </div>
             <div class="col">
-                <a th:href="@{/cars}">cars</a>
+                <a th:href="@{/cars/{id}(id=${car.id})}">Go Back To Car</a>
             </div>
             <div class="col">
-                <a th:href="@{/logout}">logout</a>
+                <a th:href="@{/cars}">All Cars</a>
+            </div>
+            <div class="col">
+                <a th:href="@{/logout}">Logout</a>
             </div>
         </div>
 
-        <form th:action="@{/cars/edit}" th:object="${car}" method="post" enctype="multipart/form-data">
+        <form class="p-3" th:action="@{/cars/edit}" th:object="${car}" method="post" enctype="multipart/form-data">
 
             <input type="hidden" th:field="*{id}" />
 
@@ -67,6 +70,22 @@
                 <div
                     th:if="${#fields.hasErrors('releaseYear')} and ${submitted}"
                     th:errors="*{releaseYear}"
+                    class="text-danger"
+                ></div>
+            </div>
+
+            <div class="form-group">
+                <label for="carDetails">Extra Info:</label>
+                <textarea
+                    th:field="*{carDetails}"
+                    id="carDetails"
+                    class="form-control"
+                    value="Separate details with a comma"
+                >
+                </textarea>
+                <div
+                    th:if="${#fields.hasErrors('carDetails')} and ${submitted}"
+                    th:errors="*{carDetails}"
                     class="text-danger"
                 ></div>
             </div>
